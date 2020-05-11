@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: models/listing.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: models/listing.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * Holds attributes of a apartment listing.
+ */
+class Listing {
+    /**
+     * Takes in a JSON from Firebase containing listing attributes and creates an object from it.
+     * @param {string} address listing address
+     * @param {boolean} available if listing is available
+     * @param {string} dateEndAvailable end date of availability
+     * @param {string} dateStartAvailable start date of availability
+     * @param {string} hostUserID ID of host of listing
+     * @param {string} listingID ID of listing
+     * @param {string} photoURL URL for listing photo
+     * @param {float} rentalPrice price of listing
+     * @param {int} squareFootageEstimate estimate of listing square footage
+     * @param {Array&lt;int>} coordinates of the apartment
+     * @param {float} distance miles between listing and current coordinates
+     */
+    constructor(address, available, dateEndAvailable, dateStartAvailable, hostUserID, listingID, rentalPrice, squareFootageEstimate, photoURL, coordinates, distance) {
+        this._address = address;
+        this._available = available;
+        this._dateEndAvailable = dateEndAvailable;
+        this._dateStartAvailable = dateStartAvailable;
+        this._hostUserID = hostUserID;
+        this._listingID = listingID;
+        this._photoURL = photoURL;
+        this._rentalPrice = rentalPrice;
+        this._squareFootageEstimate = squareFootageEstimate;
+        this._coordinates = coordinates;
+        this._distance = distance;
+    }
+    /**
+     * @property {string} address listing address
+     */
+    get address() {
+        return this._address;
+    }
+    set address(addr) {
+        this._address = addr;
+    }
+    /**
+     * @property {boolean} available is listing available
+     */
+    get available() {
+        return this._available;
+    }
+    set available(newAvailability) {
+        this._available = newAvailability;
+    }
+    /**
+     * @property {string} Listing.dateEndAvailable listing end date
+     */
+    get dateEndAvailable() {
+        return this._dateEndAvailable;
+    }
+    set dateEndAvailable(newDate) {
+        this._dateEndAvailable = newDate;
+    }
+    /**
+     * @property {string} Listing.dateStartAvailable listing start date
+     */
+    get dateStartAvailable() {
+        return this._dateStartAvailable;
+    }
+    set dateStartAvailable(newDate) {
+        this._dateStartAvailable = newDate;
+    }
+    /**
+     * @property {string} Listing.hostUserID listing's host user ID
+     */
+    get hostUserID() {
+        return this._hostUserID;
+    }
+    set hostUserID(userID) {
+        this._hostUserID = userID;
+    }
+    /**
+     * @property {string} Listing.listingID listingID of listing
+     */
+    get listingID() {
+        return this._listingID;
+    }
+    set listingID(newListingID) {
+        this._listingID = newListingID;
+    }
+    /**
+     * @property {string} Listing.photoURL listing's photo url
+     */
+    get photoURL() {
+        return this._photoURL;
+    }
+    set photoURL(url) {
+        this._photoURL = url;
+    }
+    /**
+     * @property {float} Listing.rentalPrice listing rental price
+     */
+    get rentalPrice() {
+        return this._rentalPrice;
+    }
+    set rentalPrice(price) {
+        this._rentalPrice = price;
+    }
+    /**
+     * @property {int} Listing.squareFootageEstimate square footage estimate of listing
+     */
+    get squareFootageEstimate() {
+        return this._squareFootageEstimate;
+    }
+    set squareFootageEstimate(estimate) {
+        this._squareFootageEstimate = estimate;
+    }
+    /**
+     * @property {Array&lt;int>} Listing.coordinates coordinates of the listed apartment
+     */
+    get coordinates() {
+        return this._coordinates;
+    }
+    set coordinates(coords) {
+        this.coordinates = coords;
+    }
+    /**
+     * @property {int} Listing.distance distance between user and listed apartment
+     */
+    get distance() {
+        return this._distance;
+    }
+    set distance(dist) {
+        this._distance = dist;
+    }
+}
+export default Listing;</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="BookingRequest.html">BookingRequest</a></li><li><a href="EmailManager.html">EmailManager</a></li><li><a href="FirebaseManager.html">FirebaseManager</a></li><li><a href="Listing.html">Listing</a></li><li><a href="MovingJob.html">MovingJob</a></li><li><a href="UserProfile.html">UserProfile</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.3</a> on Sat Nov 30 2019 19:48:31 GMT-0800 (Pacific Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

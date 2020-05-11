@@ -1,0 +1,21 @@
+{
+  "name": "cs-130-project",
+  "version": "1.0.0",
+  "description": "cs 130 project fall 2019",
+  "main": "config.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "cd api && npm install && node bin/www",
+    "heroku-postbuild": "cd instorage && npm install --only=dev && npm install && npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hsubrittany/CS-130-Project.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/hsubrittany/CS-130-Project/issues"
+  },
+  "homepage": "https://github.com/hsubrittany/CS-130-Project#readme"
+}

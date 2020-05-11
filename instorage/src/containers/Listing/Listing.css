@@ -1,0 +1,195 @@
+@import url('https://fonts.googleapis.com/css?family=Montserrat&display=swap');
+@import url('https://fonts.googleapis.com/css?family=Lato&display=swap');
+
+.pad-container {
+	margin-top: 30px;
+}
+
+.custom-text {
+	font-size: 1em;
+	margin-top: 1.33em;
+	margin-bottom: 1.33em;
+	margin-left: 0;
+	margin-right: 0;
+	font-weight: bold;
+	padding-right: 7px;
+}
+
+.btn-custom {
+	background-color: #274060;
+	color: white;
+	width: 240px;
+	margin-left: auto;
+	margin-right: auto;
+	margin-top: 20px;
+	display: block;
+}
+
+.btn:hover {
+	color: #fff !important;
+	text-decoration: none;
+}
+
+.w-custom {
+	width: 100px;
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+	margin-bottom: 20px;
+}
+
+.profile-pic {
+	width: 50%;
+	height: 80%;
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+	padding-top: 20px;
+}
+
+.name-text {
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+	font-size: 24px;
+}
+
+.apt-info{
+	width: 40%;
+	margin-right: 4%;
+}
+
+.range-pick{
+	width: 80%;
+}
+
+.booking-form{
+	padding-top: 10px;
+	width: 350px;
+	height: 540px;
+	border: 1px solid #E1E1E1;
+	background: white;
+	z-index: 5 !important;
+	/*position: relative;*/
+}
+
+div.DateRangePicker{
+	margin-top: 0px;
+	margin-left: 0px;
+	margin-right: 0px;
+}
+
+div.DateInput{
+	width: 100px;
+}
+
+#your_unique_start_date_id.DateInput_input{
+	font-size:15px;
+	font-family: Helvetica;
+}
+
+#your_unique_end_date_id.DateInput_input{
+	font-size:15px;
+	font-family: Helvetica;
+}
+
+.mx25 {
+	margin-left: 25px;
+	margin-right: 25px;
+}
+
+.my1rem {
+	margin-top: 1rem;
+	margin-bottom: 1rem;
+}
+
+.mb1rem {
+	margin-bottom: 1rem !important;
+}
+
+.form-check {
+	margin-left: 25px;
+}
+
+.form-check-input {
+	margin-left: 0.1px;
+	/*padding-left: 13px;*/
+}
+
+.form-check-label{
+	padding-left: 20px;
+}
+
+.actual-content{
+	/* font-family: 'Lato', sans-serif; */
+	padding-top: 35px;
+}
+
+.address{
+	/* font-family: 'Montserrat', sans-serif; */
+	font-size: 25px;
+	font-weight: 700;
+	margin-bottom: 20px;
+	padding-right: 5px;
+}
+
+.apt-pic {
+	object-fit: cover;
+	width: 100%;
+	max-height: 65vh;
+}
+
+.my-profile-pic {
+	height: 80px;
+	width: 80px;
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.my-listing-date .DateInput_input{
+	margin-top: 0px !important;
+}
+
+.my-listing-date .DateRangePickerInput__withBorder{
+	width: 298px;
+}
+
+.my-listing-date div.DateInput.DateInput_1{
+	width: 128px;
+}
+
+.my-listing-date #your_unique_start_date_id.DateInput_input{
+	font-size:15px;
+	text-align: center;
+	font-weight: 200;
+	/* font-family: 'Lato', sans-serif; */
+}
+
+.my-listing-date #your_unique_end_date_id.DateInput_input{
+	font-size:15px;
+	font-weight: 200;
+	text-align: center;
+	/* font-family: 'Lato', sans-serif; */
+}
+
+.my-listing-date .DateRangePicker {
+	/* margin: 0 auto; */
+
+}
+
+label.form-label{
+	margin-bottom: 0px;
+}
+
+.form-group{
+	margin-bottom: 5px;
+}
+
+.my-location-search-input .location-search-input{
+	width: 298px;
+}
+
+.ant-time-picker-panel-select li{
+	display: block !important;
+}

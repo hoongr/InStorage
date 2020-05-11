@@ -1,0 +1,21 @@
+.my-submission-form-date #start_date_id.DateInput_input{
+    font-size:15px;
+    font-family: Helvetica;
+}
+
+.my-submission-form-date #end_date_id.DateInput_input{
+    font-size:15px;
+    font-family: Helvetica;
+}
+
+.my-submission-form-location .location-search-input{
+    width: 100%;
+}
+
+.card-container {
+	margin: 0 auto;
+	float: none;
+	margin-bottom: 10px;
+	width: 100%;
+	max-width: 700px;
+}

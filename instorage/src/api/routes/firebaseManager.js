@@ -1,0 +1,1021 @@
+import google from "google-maps-react";
+import EmailManager from "./emailManager";
+import Listing from "../../models/listing";
+import UserProfile from "../../models/userProfile";
+import BookingRequest from "../../models/bookingRequest";
+import MovingJob from "../../models/movingJob";
+const googleMapsClient = require("@google/maps").createClient({
+  key: "AIzaSyCr7xu38TladvOmO6ornfKdqxItaecO5Fs",
+  Promise
+});
+// a function that calculates distance between two coordinates in miles
+function distance(lat1, lon1, lat2, lon2) {
+  if (lat1 == lat2 && lon1 == lon2) {
+    return 0;
+  } else {
+    var radlat1 = (Math.PI * lat1) / 180;
+    var radlat2 = (Math.PI * lat2) / 180;
+    var theta = lon1 - lon2;
+    var radtheta = (Math.PI * theta) / 180;
+    var dist =
+      Math.sin(radlat1) * Math.sin(radlat2) +
+      Math.cos(radlat1) * Math.cos(radlat2) * Math.cos(radtheta);
+    if (dist > 1) {
+      dist = 1;
+    }
+    dist = Math.acos(dist);
+    dist = (dist * 180) / Math.PI;
+    dist = dist * 60 * 1.1515;
+    return Math.round(100 * dist) / 100;
+  }
+}
+/**
+ * Manages the API endpoints for Firebase database.
+ */
+class FirebaseManager {
+  /**
+   * @memberof FirebaseManager
+   * @param {Object} obj object containing BookingRequest fields
+   */
+  static addBookingRequest(obj) {
+    fetch("/firebase/listings/book", {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        _clientUserID: obj.clientUserID,
+        _dateEnd: obj.dateEnd,
+        _dateStart: obj.dateStart,
+        _moveTime: obj.moveTime,
+        _hostUserID: obj.hostUserID,
+        _listingID: obj.listingID,
+        _needMover: obj.needMover,
+        _requestState: obj.hasOwnProperty("requestState")
+          ? obj.requestState
+          : "pending",
+        _clientAddress: obj.clientAddress,
+        _hostAddress: obj.hostAddress,
+        _inventoryPhotoURL: obj.inventoryPhotoURL,
+        _inventoryList: obj.hasOwnProperty("inventoryList")
+          ? obj.inventoryList
+          : ["nothing"]
+      })
+    })
+      .then(res => res.json())
+      .then(response => console.log("Success:", JSON.stringify(response)))
+      .catch(error => console.error("Error:", error));
+  }
+  /**
+   * @memberof FirebaseManager
+   * @return {Promise} promise object representing list of all booking requests
+   */
+  static getAllBookingRequests() {
+    var bookingRequests = [];
+    return fetch(`/firebase/bookingRequests`)
+      .then(res => res.json())
+      .then(response => {
+        Object.keys(response).forEach(function(key) {
+          var bookingRequest = response[key];
+          bookingRequests.push(
+            new BookingRequest(
+              key,
+              bookingRequest._clientUserID,
+              bookingRequest._dateEnd,
+              bookingRequest._dateStart,
+              bookingRequest._moveTime,
+              bookingRequest._hostUserID,
+              bookingRequest._listingID,
+              bookingRequest._needMover,
+              bookingRequest._requestState,
+              bookingRequest._clientAddress,
+              bookingRequest._hostAddress,
+              bookingRequest._inventoryPhotoURL,
+              bookingRequest._inventoryList
+            )
+          );
+        });
+        return bookingRequests;
+      })
+      .catch(error => {
+        console.error("Error:", error);
+        return [];
+      });
+  }
+  /**
+   * Get all booking requests corresponding to a specific listing.
+   * @memberof FirebaseManager
+   * @param {string} listingID listing ID of listing sought after
+   * @return {Promise} promise object representing booking requests for the listing corresponding to the passed in listing ID
+   */
+  static getListingBookingRequests(listingID) {
+    var bookingRequests = [];
+    return fetch(`/firebase/bookingRequests?listingID=${listingID}`)
+      .then(res => res.json())
+      .then(response => {
+        Object.keys(response).forEach(function(key) {
+          var bookingRequest = response[key];
+          bookingRequests.push(
+            new BookingRequest(
+              key,
+              bookingRequest._clientUserID,
+              bookingRequest._dateEnd,
+              bookingRequest._dateStart,
+              bookingRequest._moveTime,
+              bookingRequest._hostUserID,
+              bookingRequest._listingID,
+              bookingRequest._needMover,
+              bookingRequest._requestState,
+              bookingRequest._clientAddress,
+              bookingRequest._hostAddress,
+              bookingRequest._inventoryPhotoURL,
+              bookingRequest._inventoryList
+            )
+          );
+        });
+        return bookingRequests;
+      })
+      .catch(error => {
+        console.error("Error:", error);
+        return [];
+      });
+  }
+  /**
+   * Get all booking requests for a specific host.
+   * @memberof FirebaseManager
+   * @param {string} hostUserID user ID of host
+   * @return {Promise} promise object representing booking requests for the host
+   */
+  static getHostBookingRequests(hostUserID) {
+    var bookingRequests = [];
+    return fetch(`/firebase/bookingRequests?hostUserID=${hostUserID}`)
+      .then(res => res.json())
+      .then(response => {
+        Object.keys(response).forEach(function(key) {
+          var bookingRequest = response[key];
+          bookingRequests.push(
+            new BookingRequest(
+              key,
+              bookingRequest._clientUserID,
+              bookingRequest._dateEnd,
+              bookingRequest._dateStart,
+              bookingRequest._moveTime,
+              bookingRequest._hostUserID,
+              bookingRequest._listingID,
+              bookingRequest._needMover,
+              bookingRequest._requestState,
+              bookingRequest._clientAddress,
+              bookingRequest._hostAddress,
+              bookingRequest._inventoryPhotoURL,
+              bookingRequest._inventoryList
+            )
+          );
+        });
+        return bookingRequests;
+      })
+      .catch(error => {
+        console.error("Error:", error);
+        return [];
+      });
+  }
+
+  /**
+   * Get a booking request by its ID
+   * @memberof FirebaseManager
+   * @param {string} bookingRequestID id of booking request
+   * @return {Promise} promise object representing booking request
+   */
+  static getBookingRequestByID(bookingRequestID) {
+    var bookingRequest;
+    return fetch(
+      `/firebase/bookingRequests?bookingRequestID=${bookingRequestID}`
+    )
+      .then(res => res.json())
+      .then(response => {
+        let key = Object.keys(response)[0];
+        response = response[[Object.keys(response)[0]]];
+        bookingRequest = new BookingRequest(
+          key,
+          response._clientUserID,
+          response._dateEnd,
+          response._dateStart,
+          response._moveTime,
+          response._hostUserID,
+          response._listingID,
+          response._needMover,
+          response._requestState,
+          response._clientAddress,
+          response._hostAddress,
+          response._inventoryPhotoURL,
+          response._inventoryList
+        );
+
+        return bookingRequest;
+      })
+      .catch(error => {
+        console.error("Error:", error);
+        return null;
+      });
+  }
+  /**
+   * Get booking requests associated with a specific client
+   * @param {string} clientUserID ID of client
+   * @return {Promise} promise object representing list of booking requests
+   */
+  static getClientBookingRequests(clientUserID) {
+    var bookingRequests = [];
+    return fetch(`/firebase/bookingRequests?clientUserID=${clientUserID}`)
+      .then(res => res.json())
+      .then(response => {
+        Object.keys(response).forEach(function(key) {
+          var bookingRequest = response[key];
+          bookingRequests.push(
+            new BookingRequest(
+              key,
+              bookingRequest._clientUserID,
+              bookingRequest._dateEnd,
+              bookingRequest._dateStart,
+              bookingRequest._moveTime,
+              bookingRequest._hostUserID,
+              bookingRequest._listingID,
+              bookingRequest._needMover,
+              bookingRequest._requestState,
+              bookingRequest._clientAddress,
+              bookingRequest._hostAddress,
+              bookingRequest._inventoryPhotoURL,
+              bookingRequest._inventoryList
+            )
+          );
+        });
+        return bookingRequests;
+      })
+      .catch(error => {
+        console.error("Error:", error);
+        return [];
+      });
+  }
+
+  /**
+   * Set's request state of specific booking request to "accepted",
+   * which triggers creating a moving job if the request needed it,
+   * as well as creating listings if the consecutive remaining
+   * available dates before/after the booking are longer than 2 weeks.
+   * @param {string} bookingID ID of booking request
+   */
+  static acceptBookingRequest(bookingID) {
+    fetch(`/firebase/bookingRequests?bookingID=${bookingID}`, {
+      method: "PATCH",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        _requestState: "accepted"
+      })
+    })
+      .then(res => res.json())
+      .then(response => console.log("Success:", JSON.stringify(response)))
+      .catch(error => console.error("Error:", error));
+
+    this.getBookingRequestByID(bookingID).then(res => {
+      if (res._needMover == true) {
+        var obj = {
+          clientAddress: res._clientAddress,
+          clientUserID: res._clientUserID,
+          hostAddress: res._hostAddress,
+          hostUserID: res._hostUserID,
+          moveDate: res._dateStart,
+          moveTime: res._moveTime,
+          moverID: "",
+          inventoryPhotoURL: res._inventoryPhotoURL
+        };
+        this.addMovingJob(obj);
+        obj.moveDate = res._dateEnd;
+        obj.clientAddress = res._hostAddress;
+        obj.hostAddress = res._clientAddress;
+        this.addMovingJob(obj);
+      }
+
+      // Send email that request was accepted
+      var ratingLink = `http://localhost:3000/rateyourbooking/${res._hostUserID}/${bookingID}`;
+      console.log(ratingLink)
+      var listingLink = `http://localhost:3000/viewListing/${res._listingID}`;
+      this.getUserProfile(res._clientUserID).then(res =>
+        EmailManager.emailBookingRequestConfirmation(
+          res._name,
+          res._email,
+          listingLink,
+          ratingLink
+        )
+      );
+
+      var startRequestDate = Date.parse(res._dateStart);
+      console.log(res._dateStart, startRequestDate);
+      var endRequestDate = Date.parse(res._dateEnd);
+      console.log(res._dateEnd, endRequestDate);
+      if (navigator && navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(pos => {
+          this.getListingWithCoords(res._listingID, pos.coords).then(
+            listing => {
+              var startListingDate = Date.parse(listing._dateStartAvailable);
+              console.log(listing._dateStartAvailable, startListingDate);
+              var endListingDate = Date.parse(listing._dateEndAvailable);
+              console.log(listing._dateEndAvailable, endListingDate);
+              var startDifference = startRequestDate - startListingDate;
+              var endDifference = endListingDate - endRequestDate;
+              var obj = {
+                address: listing._address,
+                available: true,
+                dateEndAvailable: res._dateStart,
+                dateStartAvailable: listing._dateStartAvailable,
+                hostUserID: listing._hostUserID,
+                photoURL: listing._photoURL,
+                rentalPrice: listing._rentalPrice,
+                squareFootageEstimate: listing._squareFootageEstimate
+              };
+              if (startDifference >= 1209600000) {
+                this.addListing(obj);
+              }
+              if (endDifference >= 1209600000) {
+                obj._dateStartAvailable = res._dateEnd;
+                obj._dateEndAvailable = listing._dateEndAvailable;
+                this.addListing(obj);
+              }
+            }
+          );
+        });
+      }
+    });
+  }
+
+  /**
+   * Rejects a booking request, setting the request state to "rejected".
+   * @param {string} bookingID booking request to be rejected
+   */
+  static rejectBookingRequest(bookingID) {
+    fetch(`/firebase/bookingRequests?bookingID=${bookingID}`, {
+      method: "PATCH",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        _requestState: "rejected"
+      })
+    })
+      .then(res => res.json())
+      .then(response => console.log("Success:", JSON.stringify(response)))
+      .catch(error => console.error("Error:", error));
+  }
+
+  /**
+   * Add's a listing to the database along with its coordinates.
+   * @memberof FirebaseManager
+   * @param {Object} obj object containing fields for a Listing
+   */
+  static addListing(obj) {
+    // address needs to be in this format: 1600+Amphitheatre+Parkway,+Mountain+View,+CA
+    return googleMapsClient.geocode(
+      {
+        address: obj.address
+      },
+      function(err, response) {
+        if (!err) {
+          const coordinates = response.json.results[0].geometry.location;
+          console.log([coordinates.lat, coordinates.lng]);
+          console.log("adding listing to firebase!");
+          fetch("/firebase/listings", {
+            method: "POST",
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              _address: obj.address,
+              _available: obj.available,
+              _dateEndAvailable: obj.dateEndAvailable,
+              _dateStartAvailable: obj.dateStartAvailable,
+              _hostUserID: obj.hostUserID,
+              _photoURL: obj.photoURL,
+              _rentalPrice: obj.rentalPrice,
+              _squareFootageEstimate: obj.squareFootageEstimate,
+              _coordinates: [coordinates.lat, coordinates.lng]
+            })
+          })
+            .then(res => res.json())
+            .then(response => console.log("Success:", JSON.stringify(response)))
+            .catch(error => console.error("Error:", error));
+        }
+      }
+    )
+    .asPromise();
+  }
+  /**
+   * Gets all listings, sorted by increasing distance from coordinates passed in.
+   * @memberof FirebaseManager
+   * @param {OBject} currentCoords object with latitude and longitude fields
+   * @return {Promise} promise object representing all listings in database
+   */
+  static getAllListingsWithCoords(currentCoords) {
+    var listings = [];
+
+    return fetch(`/firebase/listings`)
+      .then(res => res.json())
+      .then(response => {
+        Object.keys(response).forEach(function(key) {
+          var listing = response[key];
+          console.log(key);
+          if (listing._available) {
+            listings.push(
+              new Listing(
+                listing._address,
+                listing._available,
+                listing._dateEndAvailable,
+                listing._dateStartAvailable,
+                listing._hostUserID,
+                key,
+                parseFloat(listing._rentalPrice, 10),
+                parseInt(listing._squareFootageEstimate, 10),
+                listing._photoURL,
+                listing._coordinates,
+                distance(
+                  currentCoords.latitude,
+                  currentCoords.longitude,
+                  listing._coordinates[0],
+                  listing._coordinates[1]
+                ) // calculates distance between user and listing
+              )
+            );
+          }
+        });
+        // sort listings by distance to user
+        listings.sort(function(a, b) {
+          return a.distance - b.distance;
+        });
+        return listings;
+      })
+      .catch(error => {
+        console.error("Error:", error);
+        return [];
+      });
+  }
+
+  /**
+   * @memberof FirebaseManager
+   * @return {Promise} promise object representing all listings in database
+   */
+  static getAllListings() {
+    var listings = [];
+
+    return fetch(`/firebase/listings`)
+      .then(res => res.json())
+      .then(response => {
+        Object.keys(response).forEach(function(key) {
+          var listing = response[key];
+          listings.push(
+            new Listing(
+              listing._address,
+              listing._available,
+              listing._dateEndAvailable,
+              listing._dateStartAvailable,
+              listing._hostUserID,
+              listing._listingID,
+              listing._rentalPrice,
+              listing._squareFootageEstimate,
+              listing._photoURL,
+              listing._coordinates
+            )
+          );
+        });
+        // sort listings by distance to user
+        return listings;
+      })
+      .catch(error => {
+        console.error("Error:", error);
+        return [];
+      });
+  }
+  /**
+   * Get a specific listing along with its distance from the coordinates passed in.
+   * @memberof FirebaseManager
+   * @param {string} listingID ID of listing
+   * @return {Promise} promise object representing listing corresponding to the passed in listing ID
+   */
+  static getListingWithCoords(listingID, currentCoords) {
+    var listing;
+    return fetch(`/firebase/listings?listingID=${listingID}`)
+      .then(res => res.json())
+      .then(response => {
+        const jsonResponse = response[[Object.keys(response)[0]]];
+        listing = new Listing(
+          jsonResponse._address,
+          jsonResponse._available,
+          jsonResponse._dateEndAvailable,
+          jsonResponse._dateStartAvailable,
+          jsonResponse._hostUserID,
+          listingID,
+          jsonResponse._rentalPrice,
+          jsonResponse._squareFootageEstimate,
+          jsonResponse._photoURL,
+          jsonResponse._coordinates,
+          distance(
+            currentCoords.latitude,
+            currentCoords.longitude,
+            jsonResponse._coordinates[0],
+            jsonResponse._coordinates[1]
+          ) // calculates distance between user and listing
+        );
+        return listing;
+      })
+      .catch(error => {
+        console.error("Error:", error);
+        return null;
+      });
+  }
+  /**
+   * Get a specific listing.
+   * @memberof FirebaseManager
+   * @param {string} listingID ID of listing
+   * @return {Promise} promise object representing listing corresponding to the passed in listing ID
+   * @deprecated
+   */
+  static getListing(listingID) {
+    var listing;
+    return fetch(`/firebase/listings?listingID=${listingID}`)
+      .then(res => res.json())
+      .then(response => {
+        const jsonResponse = response[[Object.keys(response)[0]]];
+        listing = new Listing(
+          jsonResponse._address,
+          jsonResponse._available,
+          jsonResponse._dateEndAvailable,
+          jsonResponse._dateStartAvailable,
+          jsonResponse._hostUserID,
+          listingID,
+          jsonResponse._rentalPrice,
+          jsonResponse._squareFootageEstimate,
+          jsonResponse._photoURL,
+          jsonResponse._coordinates
+        );
+        return listing;
+      })
+      .catch(error => {
+        console.error("Error:", error);
+        return null;
+      });
+  }
+  /**
+   * Get a host's listings.
+   * @memberof FirebaseManager
+   * @param {string} userID host user ID
+   * @return {Promise} promise object representing list of listings with the specified host
+   */
+  static getUserListings(userID, currentCoords) {
+    var listings = [];
+    return fetch(`/firebase/listings?hostUserID=${userID}`)
+      .then(res => res.json())
+      .then(response => {
+        // response.forEach(listing => {
+        //   const jsonResponse = listing[[Object.keys(listing)[0]]];
+        // listings.push(new Listing(jsonResponse._address, jsonResponse._available, jsonResponse._dateEndAvailable, jsonResponse._dateStartAvailable, jsonResponse._hostUserID, jsonResponse._listingID, jsonResponse._rentalPrice, jsonResponse._squareFootageEstimate));
+        //   console.log(listing);
+        //   listing = listing[0];
+        //   listings.push(new Listing(listing._address, listing._available, listing._dateEndAvailable, listing._dateStartAvailable,listing._hostUserID, listing._listingID, listing._rentalPrice, listing._squareFootageEstimate));
+        // });
+        Object.keys(response).forEach(function(key) {
+          var listing = response[key];
+          listings.push(
+            new Listing(
+              listing._address,
+              listing._available,
+              listing._dateEndAvailable,
+              listing._dateStartAvailable,
+              listing._hostUserID,
+              key,
+              listing._rentalPrice,
+              listing._squareFootageEstimate,
+              listing._photoURL,
+              listing._coordinates,
+              distance(
+                currentCoords.latitude,
+                currentCoords.longitude,
+                listing._coordinates[0],
+                listing._coordinates[1]
+              ) // calculates distance between user and listing
+            )
+          );
+          // console.log(key + " " + obj[key]);
+        });
+        listings.sort(function(a, b) {
+          return a.distance - b.distance;
+        });
+        return listings;
+        // return response;
+      })
+      .catch(error => {
+        console.error("Error:", error);
+        return [];
+      });
+  }
+  /**
+   * Get a host's listings.
+   * @memberof FirebaseManager
+   * @param {string} userID host user ID
+   * @return {Promise} promise object representing list of listings with the specified host
+   * @deprecated
+   */
+  static originalGetUserListings(userID) {
+    var listings = [];
+    return fetch(`/firebase/listings?hostUserID=${userID}`)
+      .then(res => res.json())
+      .then(response => {
+        // response.forEach(listing => {
+        //   const jsonResponse = listing[[Object.keys(listing)[0]]];
+        // listings.push(new Listing(jsonResponse._address, jsonResponse._available, jsonResponse._dateEndAvailable, jsonResponse._dateStartAvailable, jsonResponse._hostUserID, jsonResponse._listingID, jsonResponse._rentalPrice, jsonResponse._squareFootageEstimate));
+        //   console.log(listing);
+        //   listing = listing[0];
+        //   listings.push(new Listing(listing._address, listing._available, listing._dateEndAvailable, listing._dateStartAvailable,listing._hostUserID, listing._listingID, listing._rentalPrice, listing._squareFootageEstimate));
+        // });
+        Object.keys(response).forEach(function(key) {
+          var listing = response[key];
+          listings.push(
+            new Listing(
+              listing._address,
+              listing._available,
+              listing._dateEndAvailable,
+              listing._dateStartAvailable,
+              listing._hostUserID,
+              key,
+              listing._rentalPrice,
+              listing._squareFootageEstimate,
+              listing._photoURL,
+              listing._coordinates
+            )
+          );
+          // console.log(key + " " + obj[key]);
+        });
+        return listings;
+        // return response;
+      })
+      .catch(error => {
+        console.error("Error:", error);
+        return [];
+      });
+  }
+
+  /**
+   * Makes specific listing no longer available.
+   * @param {string} listingID ID of listing to be accepted
+   */
+  static acceptListing(listingID) {
+    fetch(`/firebase/listings?listingID=${listingID}`, {
+      method: "PATCH",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        _available: false
+      })
+    })
+      .then(res => res.json())
+      .then(response => console.log("Success:", JSON.stringify(response)))
+      .catch(error => console.error("Error:", error));
+  }
+
+  /**
+   * @memberof FirebaseManager
+   * @param {Object} obj object containing UserProfile fields
+   */
+  static addUserProfile(obj) {
+    return fetch("/firebase/userProfiles", {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        _bio: obj.bio,
+        _college: obj.college,
+        _name: obj.name,
+        _phoneNum: obj.phoneNum,
+        _userID: obj.userID,
+        _userType: obj.hasOwnProperty("userType") ? obj.userType : "client",
+        _email: obj.email,
+        _ratings: obj.hasOwnProperty("ratings") ? obj.ratings : [-1],
+        _averageRating: obj.hasOwnProperty("averageRating")
+          ? obj.averageRating
+          : -1,
+        _venmo: obj.venmo,
+        _profilePicURL: obj.profilePicURL
+      })
+    })
+      .then(res => res.json())
+      .then(response => console.log("Success:", JSON.stringify(response)))
+      .catch(error => console.error("Error:", error));
+  }
+  /**
+   * @memberof FirebaseManager
+   * @return {Promise} promise object representing list of all user profiles
+   */
+  static getAllUserProfiles() {
+    var userProfiles = [];
+    return fetch(`/firebase/userProfiles`)
+      .then(res => res.json())
+      .then(response => {
+        Object.keys(response).forEach(function(key) {
+          var userProfile = response[key];
+          userProfiles.push(
+            new UserProfile(
+              userProfile._bio,
+              userProfile._college,
+              userProfile._name,
+              userProfile._phoneNum,
+              userProfile._userID,
+              userProfile._venmo,
+              userProfile._userType,
+              userProfile._email,
+              userProfile._ratings,
+              userProfile._averageRating,
+              userProfile._profilePicURL
+            )
+          );
+        });
+        return userProfiles;
+      })
+      .catch(error => {
+        console.error("Error:", error);
+        return [];
+      });
+  }
+  /**
+   * Get a user's profile.
+   * @memberof FirebaseManager
+   * @param {string} userID user ID of user profile sought after
+   * @return {Promise} promise object representing user profile corresponding to user ID passed in
+   */
+  static getUserProfile(userID) {
+    var userProfile;
+    return fetch(`/firebase/userProfiles?userID=${userID}`)
+      .then(res => res.json())
+      .then(response => {
+        const jsonResponse = response[[Object.keys(response)[0]]];
+        userProfile = new UserProfile(
+          jsonResponse._bio,
+          jsonResponse._college,
+          jsonResponse._name,
+          jsonResponse._phoneNum,
+          jsonResponse._userID,
+          jsonResponse._venmo,
+          jsonResponse._userType,
+          jsonResponse._email,
+          jsonResponse._ratings,
+          jsonResponse._averageRating,
+          jsonResponse._profilePicURL
+        );
+        return userProfile;
+      })
+      .catch(error => {
+        console.error("Error:", error);
+        return null;
+      });
+  }
+
+  /**
+   * Update a user's avg rating
+   * @memberof FirebaseManager
+   * @param {string} userID user ID of user profile sought after
+   * @param {string} ratingToAdd new rating to factor into average
+   */
+  static updateUserRating(userID, ratingToAdd) {
+    var ratingsArr;
+    var totalSumRatings = 0,
+      newAvgRating = 0;
+    this.getUserProfile(userID)
+      .then(user => {
+        ratingsArr = Object.keys(user._ratings).map(k => user._ratings[k]);
+        ratingsArr.push(ratingToAdd);
+        if (ratingsArr[0] == -1) ratingsArr.shift();
+        ratingsArr.forEach(rating => {
+          totalSumRatings += rating;
+        });
+
+        // To round to two decimal places
+        newAvgRating =
+          Math.round((100 * totalSumRatings) / ratingsArr.length) / 100;
+
+        fetch(`/firebase/userProfiles?userID=${userID}`, {
+          method: "PATCH",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            _ratings: ratingsArr,
+            _averageRating: newAvgRating
+          })
+        });
+      })
+      .then(res => res.json())
+      .then(response => console.log("Success:", JSON.stringify(response)))
+      .catch(error => console.error("Error:", error));
+  }
+
+  /**
+   * @memberof FirebaseManager
+   * @param {Object} obj object containing MovingJob fields
+   */
+  static addMovingJob(obj) {
+    googleMapsClient.geocode(
+      {
+        address: obj.clientAddress
+      },
+      function(err, response) {
+        if (!err) {
+          const coordinates = response.json.results[0].geometry.location;
+          console.log('client coords ' + [coordinates.lat, coordinates.lng]);
+          fetch("/firebase/movingJobs", {
+            method: "POST",
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json"
+            },
+      
+            body: JSON.stringify({
+              _clientAddress: obj.clientAddress,
+              _clientID: obj.clientUserID,
+              _hostAddress: obj.hostAddress,
+              _hostID: obj.hostUserID,
+              _moveDate: obj.moveDate,
+              _moveTime: obj.moveTime,
+              _moverID: obj.moverID,
+              _inventoryPhotoURL: obj.inventoryPhotoURL,
+              _coordinates: [coordinates.lat, coordinates.lng]
+            })
+          })
+            .then(res => res.json())
+            .then(response => console.log("Success:", JSON.stringify(response)))
+            .catch(error => console.error("Error:", error));
+        }
+      }
+    );
+    // fetch("/firebase/movingJobs", {
+    //   method: "POST",
+    //   headers: {
+    //     Accept: "application/json",
+    //     "Content-Type": "application/json"
+    //   },
+
+    //   body: JSON.stringify({
+    //     _clientAddress: obj.clientAddress,
+    //     _clientID: obj.clientUserID,
+    //     _hostAddress: obj.hostAddress,
+    //     _hostID: obj.hostUserID,
+    //     _moveDate: obj.moveDate,
+    //     _moveTime: obj.moveTime,
+    //     _moverID: obj.moverID,
+    //     _inventoryPhotoURL: obj.inventoryPhotoURL,
+    //     // _coordinates: [coordinates.lat, coordinates.lng]
+    //   })
+    // })
+    //   .then(res => res.json())
+    //   .then(response => console.log("Success:", JSON.stringify(response)))
+    //   .catch(error => console.error("Error:", error));
+    
+  }
+
+  /**
+   * Get a moving job by its ID
+   * @memberof FirebaseManager
+   * @param {string} movingJobID ID of moving job
+   * @return {Promise} promise object representing moving job corresponding to moving job ID passed in
+   */
+  static getMovingJob(movingJobID) {
+    var movingJob;
+    return fetch(`/firebase/movingJobs?movingJobID=${movingJobID}`)
+      .then(res => res.json())
+      .then(response => {
+        const jsonResponse = response[[Object.keys(response)[0]]];
+        movingJob = new MovingJob(
+          movingJobID,
+          jsonResponse._clientAddress,
+          jsonResponse._clientID,
+          jsonResponse._hostAddress,
+          jsonResponse._hostID,
+          jsonResponse._moveDate,
+          jsonResponse._moveTime,
+          jsonResponse._moverID,
+          jsonResponse._inventoryPhotoURL
+        );
+        return movingJob;
+      })
+      .catch(error => {
+        console.error("Error:", error);
+        return null;
+      });
+  }
+
+  /**
+   * Get a mover's moving jobs
+   * @memberof FirebaseManager
+   * @param {string} moverID mover's ID
+   * @return {Promise} promise object representing list of moving jobs with specified mover
+   */
+  static getMovingJobsByMover(moverID) {
+    var movingJobs = [];
+    return fetch(`/firebase/movingJobs?moverID=${moverID}`)
+      .then(res => res.json())
+      .then(response => {
+        Object.keys(response).forEach(function(key) {
+          var movingJob = response[key];
+          movingJobs.push(
+            new MovingJob(
+              key,
+              movingJob._clientAddress,
+              movingJob._clientID,
+              movingJob._hostAddress,
+              movingJob._hostID,
+              movingJob._moveDate,
+              movingJob._moveTime,
+              movingJob._moverID,
+              movingJob._inventoryPhotoURL,
+              movingJob._coordinates,
+              0
+            )
+          );
+        });
+        return movingJobs;
+      })
+      .catch(error => {
+        console.error("Error:", error);
+        return [];
+      });
+  }
+
+  /**
+   * @memberof FirebaseManager
+   * @return {Promise} promise object representing list of all moving jobs
+   */
+  static getAllMovingJobs(currentCoords) {
+    var movingJobs = [];
+    return fetch(`/firebase/movingJobs`)
+      .then(res => res.json())
+      .then(response => {
+        Object.keys(response).forEach(function(key) {
+          var movingJob = response[key];
+          movingJobs.push(
+            new MovingJob(
+              key,
+              movingJob._clientAddress,
+              movingJob._clientID,
+              movingJob._hostAddress,
+              movingJob._hostID,
+              movingJob._moveDate,
+              movingJob._moveTime,
+              movingJob._moverID,
+              movingJob._inventoryPhotoURL,
+              movingJob._coordinates,
+              distance(
+                currentCoords.latitude,
+                currentCoords.longitude,
+                movingJob._coordinates[0],
+                movingJob._coordinates[1]
+              ) // calculates distance between mover and client
+            )
+          );
+        });
+        // sort movingJobs by distance to client
+        movingJobs.sort(function(a, b) {
+          return a.distance - b.distance;
+        });
+        return movingJobs;
+      })
+      .catch(error => {
+        console.error("Error:", error);
+        return [];
+      });
+  }
+
+  /**
+   * @memberof FirebaseManager
+   * @param {string} movingJobID id of moving joeBruin69
+   * @param {string} moverID id of mover
+   */
+  static acceptMovingJob(movingJobID, moverID) {
+    return fetch(`/firebase/movingJobs?movingJobID=${movingJobID}`, {
+      method: "PATCH",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        _moverID: moverID
+      })
+    })
+      .then(res => res.json())
+      .then(response => console.log("Success:", JSON.stringify(response)))
+      .catch(error => console.error("Error:", error));
+  }
+}
+export default FirebaseManager;

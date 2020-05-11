@@ -1,0 +1,58 @@
+@import url('https://fonts.googleapis.com/css?family=Roboto+Slab&display=swap');
+@import url('https://fonts.googleapis.com/css?family=Roboto+Condensed&display=swap');
+@import url('https://fonts.googleapis.com/css?family=Alatsi|Rubik|Work+Sans&display=swap');
+
+.my-img {
+    width: 95%;
+    height: 200px;
+    object-fit: cover;
+}
+
+.my-profile-pic {
+    height: 80px;
+    width: 80px;
+}
+
+.my-title{
+    /* font-family: 'Roboto', sans-serif; */
+    font-size: 30px;
+    font-weight: 500;
+}
+
+.my-row-listing{
+    padding-top: 25px;
+    padding-bottom: 25px;
+}
+
+.my-home-address{
+    /* font-family: 'Roboto Condensed', sans-serif; */
+    font-size: 30px;
+    font-weight: 400;
+}
+
+.my-home-name{
+    /* font-family: 'Roboto Condensed', sans-serif; */
+    font-size: 20px;
+    font-weight: 300;
+}
+
+.my-home-pending{
+    /* font-family: 'Roboto Condensed', sans-serif; */
+    font-size: 20px;
+    font-weight: 200;
+}
+
+.my-head{
+    /* font-family: 'Rubik', sans-serif; */
+    font-size: 20px;
+    font-weight: 100;
+}
+
+.my-check-img{
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+}

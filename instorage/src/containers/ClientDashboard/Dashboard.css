@@ -1,0 +1,146 @@
+@import url('https://fonts.googleapis.com/css?family=Montserrat&display=swap');
+@import url('https://fonts.googleapis.com/css?family=Lato&display=swap');
+
+
+.filter-bar{
+    white-space: nowrap;
+    width:100%;
+    border-bottom: 1px solid rgb(225, 225, 225);
+    padding: 0px 10px;
+    position: fixed;
+    background: white;
+    z-index: 200 !important;
+}
+
+.my-location{
+    width: 240px;
+}
+
+.my-date{
+    width: 290px;
+}
+
+.my-date div.DateRangePicker{
+    margin: 10px 0px;
+}
+
+.my-date div.DateInput{
+    width: 100px;
+    height: 47px;
+    border-bottom: 0.5px solid #E1E1E1;
+}
+
+.my-date .DateInput_input{
+    height: 30px;
+}
+
+.my-date .DateRangePickerInput__withBorder{
+    height: 47px;
+}
+
+.my-date #your_unique_start_date_id.DateInput_input{
+    font-size:15px;
+    font-family: Helvetica;
+}
+
+.my-date #your_unique_end_date_id.DateInput_input{
+    font-size:15px;
+    font-family: Helvetica;
+}
+
+.my-price{
+    width: 180px;
+}
+
+.my-space{
+    width: 180px;
+}
+
+.my-address{
+    width: 200px;
+}
+
+.my-box{
+    width: 55px;
+}
+
+.my-select{
+    width: 80px;
+}
+
+/*!*dashboard*!*/
+.dash-content{
+    display: flex;
+    flex-direction: column;
+}
+
+/*!*left side of dash*!*/
+.listing-content{
+    display: flex;
+    flex-direction: row;
+    margin-top: 68.5px;
+}
+
+.listing-wrapper {
+    width: 50%;
+    overflow-y: hidden;
+    display: flex;
+    flex-direction: column;
+    z-index: 100 !important;
+}
+
+/*!*each listing*!*/
+.each-listing {
+    padding: 20px 15px;
+    margin: 0 15px 0 15px;
+    border-bottom: 1.5px solid #E1E1E1;
+    position: relative;
+    display: flex;
+    overflow: hidden;
+}
+
+.each-listing img {
+    width: 285px;
+    height: 190px;
+    object-fit: cover;
+    margin-right: 20px;
+    margin-left: 10px;
+}
+
+.each-listing-body {
+    width: 100%;
+    height: 190px;
+    overflow: hidden;
+}
+
+.my-address-text{
+    /* font-family: 'Montserrat', sans-serif; */
+    font-size: 25px;
+    font-weight: 600;
+}
+
+.my-price-text{
+    /* font-family: 'Lato', sans-serif; */
+    font-size: 17px;
+    font-weight: 300;
+    text-align: end;
+}
+
+/*map*/
+.map-wrapper{
+    width:45%;
+}
+
+.map-box {
+    position: fixed;
+    height: 85%;
+    width: 50%;
+}
+
+.my-location .autocomplete-dropdown-container{
+
+}
+
+.my-location .location-search-input{
+    width: 160px;
+}

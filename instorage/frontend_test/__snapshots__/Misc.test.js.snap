@@ -1,0 +1,11 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ListingSubmission should match the snapshot 1`] = `ShallowWrapper {}`;
+
+exports[`Profile should match the snapshot 1`] = `ShallowWrapper {}`;
+
+exports[`Rating should match the snapshot 1`] = `ShallowWrapper {}`;
+
+exports[`Register should match the snapshot 1`] = `ShallowWrapper {}`;
+
+exports[`SignIn should match the snapshot 1`] = `ShallowWrapper {}`;

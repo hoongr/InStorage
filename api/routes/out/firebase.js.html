@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: firebase.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: firebase.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>require('../../models')
+/**
+ * Manages the API endpoints for Firebase database.
+ */
+class FirebaseManager {
+  /**
+   * @memberof FirebaseManager
+   * @param {BookingRequest} bookingRequest booking request to be added to database
+   */
+  addBookingRequest(bookingRequest) {
+    fetch("http://localhost:9999/firebase/listings/book", {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        _clientUserID: bookingRequest._clientUserID,
+        _dateEnd: bookingRequest._dateEnd,
+        _dateStart: bookingRequest._dateStart,
+        _hostUserID: bookingRequest._hostUserID,
+        _listingID: bookingRequest._listingID,
+        _needMover: bookingRequest._needMover
+      })
+    })
+      .then(res => res.json())
+      .then(response => console.log("Success:", JSON.stringify(response)))
+      .catch(error => console.error("Error:", error));
+  }
+  /**
+   * @memberof FirebaseManager
+   * @return {Array&lt;BookingRequest>} list of all booking requests
+   */
+  getAllBookingRequests() {
+    fetch(`http://localhost:9999/firebase/bookingRequests`)
+      .then(res => res.json())
+      .then(response => {
+        bookingRequests = [];
+        response.forEach(bookingRequest => {
+          bookingRequests.push(new BookingRequest(bookingRequest));
+        });
+        return bookingRequests;
+      })
+      .catch(error => {
+        console.error("Error:", error);
+        return null;
+      });
+  }
+  /**
+   * Get all booking requests corresponding to a specific listing.
+   * @memberof FirebaseManager
+   * @param {string} listingID listing ID of listing sought after
+   * @return {Array&lt;BookingRequest>} booking requests for the listing corresponding to the passed in listing ID
+   */
+  getListingBookingRequests(listingID) {
+    fetch(
+      `http://localhost:9999/firebase/bookingRequests?listingID=${listingID}`
+    )
+      .then(res => res.json())
+      .then(response => {
+        bookingRequests = [];
+        response.forEach(bookingRequest => {
+          bookingRequests.push(new BookingRequest(bookingRequest));
+        });
+        return bookingRequests;
+      })
+      .catch(error => {
+        console.error("Error:", error);
+        return null;
+      });
+  }
+  /**
+   * Get all booking requests for a specific host.
+   * @memberof FirebaseManager
+   * @param {string} hostUserID user ID of host
+   * @return {Array&lt;BookingRequest>} booking requests for the host
+   */
+  getHostBookingRequests(hostUserID) {
+    fetch(`http://localhost:9999/firebase/bookingRequests?userID=${userID}`)
+      .then(res => res.json())
+      .then(response => {
+        bookingRequests = [];
+        response.forEach(bookingRequest => {
+          bookingRequests.push(new BookingRequest(bookingRequest));
+        });
+        return bookingRequests;
+      })
+      .catch(error => {
+        console.error("Error:", error);
+        return null;
+      });
+  }
+
+  /**
+   * @memberof FirebaseManager
+   * @param {Listing} listing listing to be added
+   */
+  addListing(listing) {
+    fetch("http://localhost:9999/firebase/listings", {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        _address: listing._address,
+        _available: listing._available,
+        _dateEndAvailable: listing._dateEndAvailable,
+        _dateStartAvailable: listing._dateStartAvailable,
+        _hostUserID: listing._hostUserID,
+        _listingID: listing._listingID,
+        _rentalPrice: listing._rentalPrice,
+        _squareFootageEstimate: listing._squareFootageEstimate
+      })
+    })
+      .then(res => res.json())
+      .then(response => console.log("Success:", JSON.stringify(response)))
+      .catch(error => console.error("Error:", error));
+  }
+  /**
+   * @memberof FirebaseManager
+   * @return {Array&lt;Listing>} all listings in database
+   */
+  getAllListings() {
+    fetch(`http://localhost:9999/firebase/listings`)
+      .then(res => res.json())
+      .then(response => {
+        listings = [];
+        response.forEach(listing => {
+          listings.push(new Listing(listing));
+        });
+        return listings;
+      })
+      .catch(error => {
+        console.error("Error:", error);
+        return null;
+      });
+  }
+  /**
+   * Get a specific listing.
+   * @memberof FirebaseManager
+   * @param {string} listingID ID of listing
+   * @return {Listing} listing corresponding to the passed in listing ID
+   */
+  getListing(listingID) {
+    fetch(`http://localhost:9999/firebase/listings?listingID=${listingID}`)
+      .then(res => res.json())
+      .then(response => {
+        var listing = new Listing(response);
+        return listing;
+      })
+      .catch(error => {
+        console.error("Error:", error);
+        return null;
+      });
+  }
+  /**
+   * Get a host's listings.
+   * @memberof FirebaseManager
+   * @param {string} userID host user ID
+   * @return {Array&lt;Listing>} list of listings with the specified host
+   */
+  getUserListings(userID) {
+    fetch(`http://localhost:9999/firebase/listings?userID=${userID}`)
+      .then(res => res.json())
+      .then(response => {
+        listings = [];
+        response.forEach(listing => {
+          listings.push(new Listing(listing));
+        });
+        return listings;
+      })
+      .catch(error => {
+        console.error("Error:", error);
+        return null;
+      });
+  }
+
+  /**
+   * @memberof FirebaseManager
+   * @param {UserProfile} userProfile user profile to add to database
+   */
+  addUserProfile(userProfile) {
+    fetch("http://localhost:9999/firebase/userProfiles", {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        _bio: userProfile._bio,
+        _college: userProfile._college,
+        _name: userProfile._name,
+        _phoneNum: userProfile._phoneNum,
+        _userID: userProfile._userID,
+        _venmo: userProfile._venmo
+      })
+    })
+      .then(res => res.json())
+      .then(response => console.log("Success:", JSON.stringify(response)))
+      .catch(error => console.error("Error:", error));
+  }
+  /**
+   * @memberof FirebaseManager
+   * @return {Array&lt;UserProfile>} list of all user profiles
+   */
+  getAllUserProfiles() {
+    fetch(`http://localhost:9999/firebase/userProfiles`)
+      .then(res => res.json())
+      .then(response => {
+        userProfiles = [];
+        response.forEach(userProfile => {
+          userProfiles.push(new UserProfile(userProfile));
+        });
+        return userProfiles;
+      })
+      .catch(error => {
+        console.error("Error:", error);
+        return null;
+      });
+  }
+  /**
+   * Get a user's profile.
+   * @memberof FirebaseManager
+   * @param {string} userID user ID of user profile sought after
+   * @return {UserProfile} user profile corresponding to user ID passed in
+   */
+  getUserProfile(userID) {
+    fetch(`http://localhost:9999/firebase/userProfiles?userID=${userID}`)
+      .then(res => res.json())
+      .then(response => {
+        var userProfile = new UserProfile(response);
+        return userProfile;
+      })
+      .catch(error => {
+        console.error("Error:", error);
+        return null;
+      });
+  }
+}
+
+
+var express = require("express");
+var router = express.Router();
+var firebase = require("firebase");
+
+require("firebase/database");
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDtPacu-d57lBN1gtsMnIWSk3ZJj5r1wQM",
+  authDomain: "instorage-6b1ea.firebaseapp.com",
+  databaseURL: "https://instorage-6b1ea.firebaseio.com",
+  projectId: "instorage-6b1ea",
+  storageBucket: "instorage-6b1ea.appspot.com",
+  messagingSenderId: "588350868786",
+  appId: "1:588350868786:web:5d6130acdf63b530779b2b",
+  measurementId: "G-YBVXWGHM70"
+};
+
+// Initialization.
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+var listing_ref = db.ref("Listings");
+// Allows for caching whenever change occurs, something online said this optimizes firebase calls.
+listing_ref.on("value", function(snapshot) {});
+var user_ref = db.ref("UserProfiles");
+user_ref.on("value", function(snapshot) {});
+var booking_request_ref = db.ref("BookingRequests");
+booking_request_ref.on("value", function(snapshot) {});
+
+router
+  .route("/userProfiles")
+  // Retrieves user profiles.
+  .get(function(req, res) {
+    // Grabs a specific user profile.
+    if (req.query.userID) {
+      user_ref
+        .orderByChild("_userID")
+        .equalTo(req.query.userID)
+        .once("value", function(snapshot) {
+          return res.json(snapshot);
+        })
+        .catch(err => {
+          res.status(500).json({ error: "something went wrong"});
+          console.error(err);
+        });
+    // Grabs all user profiles.
+    } else {
+      let users = [];
+      user_ref
+        .orderByKey()
+        .once("value", function(snapshot) {
+          snapshot.forEach(user => {
+            users.push({
+              _bio: user.val()._bio,
+              _college: user.val()._college,
+              _name: user.val()._name,
+              _phoneNum: user.val()._phoneNum,
+              _userID: user._userID,
+              _venmo: user.val()._venmo
+            });
+          });
+          return res.json(users.reverse());
+        })
+        .catch(err => {
+          res.status(500).json({ error: "something went wrong"});
+          console.error(err);
+        });
+    }
+  })
+  // Creates user profiles.
+  .post(function(req, res) {
+    const newUser = {
+      _bio: req.body._bio,
+      _college: req.body._college,
+      _name: req.body._name,
+      _phoneNum: req.body._phoneNum,
+      _userID: req.body._userID,
+      _venmo: req.body._venmo
+    };
+
+    user_ref
+      .push(newUser)
+      .then(user => {
+        res.json({ message: `user ${user.key} successfully created` });
+      })
+      .catch(err => {
+        res.status(500).json({ error: "something went wrong" });
+        console.error(err);
+      });
+  });
+
+router
+  .route("/listings")
+  .get(function(req, res) {
+    // "/listings?hostUserID=joeBruin69"
+    // Returns all listings belonging to a specific user.
+    if (req.query.hostUserID) {
+      listing_ref
+        .orderByChild("_hostUserID")
+        .equalTo(req.query.hostUserID)
+        .once("value", function(snapshot) {
+          return res.json(snapshot);
+        })
+        .catch(err => {
+          res.status(500).json({ error: "something went wrong" });
+          console.error(err);
+        });
+    // Gets listing matching the listingID in the query.
+    } else if (req.query.listingID) {
+      listing_ref
+        .orderByKey()
+        .equalTo(req.query.listingID)
+        .once("value", function(snapshot) {
+          return res.json(snapshot);
+        })
+        .catch(err => {
+          res.status(500).json({ error: "something went wrong"});
+          console.error(err);
+        });
+    // Returns all listings.
+    } else {
+      let listings = [];
+      listing_ref
+        .orderByKey()
+        .once("value", function(snapshot) {
+          snapshot.forEach(listing => {
+            if (listing.val()._available) {
+              listings.push({
+                _address: listing.val()._address,
+                _dateEndAvailable: listing.val()._dateEndAvailable,
+                _dateStartAvailable: listing.val()._dateStartAvailable,
+                _rentalPrice: parseFloat(listing.val()._rentalPrice, 10),
+                _squareFootageEstimate: parseInt(
+                  listing.val()._squareFootageEstimate, 10),
+                _hostUserID: listing.val()._hostUserID,
+                _listingID: listing.key
+              });
+            }
+          });
+          // Orders listings by most recent.
+          return res.json(listings.reverse());
+        })
+        .catch(err => {
+          res.status(500).json({ error: "something went wrong"});
+          console.error(err);
+        });
+    }
+  })
+  // Create a listing.
+  .post(function(req, res) {
+    const newListing = {
+      _address: req.body._address,
+      _dateEndAvailable: req.body._dateEndAvailable,
+      _dateStartAvailable: req.body._dateStartAvailable,
+      _rentalPrice: req.body._rentalPrice,
+      _squareFootageEstimate: req.body._squareFootageEstimate,
+      _available: true,
+      _hostUserID: req.body._hostUserID
+    };
+
+    listing_ref
+      .push(newListing)
+      .then(listing => {
+        res.json({ message: `listing ${listing.key} created successfully` });
+      })
+      .catch(err => {
+        res.status(500).json({ error: "something went wrong" });
+        console.error(err);
+      });
+  });
+
+// Creates a booking request for a listing.
+router.route("/listings/book")
+  .post(function(req, res) {
+    const newBookingRequest = {
+      _clientUserID: req.body._clientUserID,
+      _hostUserID: req.body._hostUserID,
+      _listingID: req.body._listingID,
+      _dateStart: req.body._dateStart,
+      _dateEnd: req.body._dateEnd,
+      _needMover: req.body._needMover == "true"
+    };
+    // Do validation of booking request here, check:
+    // Is listingID valid, is hostUserID associated with listing
+    // is date start and date end within listing dates.
+
+    booking_request_ref
+      .push(newBookingRequest)
+      .then(bookingRequest => {
+        res.json({ message: `booking request ${bookingRequest.key} created successfully` });
+      })
+      .catch(err => {
+        res.status(500).json({ error: 'something went wrong'});
+        console.error(err);
+      });
+});
+
+router.route("/bookingRequests")
+  .get(function(req, res) {
+    // Get booking requests for a specific listing.
+    if (req.query.listingID) {
+      booking_request_ref
+        .orderByChild("_listingID")
+        .equalTo(req.query.listingID)
+        .once("value", function(snapshot) {
+          return res.json(snapshot);
+        })
+        .catch(err => {
+          res.status(500).json({ error: "something went wrong"});
+          console.error(err);
+        });
+    // Get booking requests for a specific user.
+    } else if (req.query.hostUserID) {
+      booking_request_ref
+        .orderByChild("_hostUserID")
+        .equalTo(req.query.hostUserID)
+        .once("value", function(snapshot) {
+          return res.json(snapshot);
+        })
+        .catch(err => {
+          res.status(500).json({ error: "something went wrong"});
+          console.error(err);
+        });
+    // Get all booking requests.
+    } else {
+      let bookingRequests = [];
+      bookingRequests.ref
+        .orderByKey()
+        .once("value", function(snapshot) {
+          snapshot.forEach(bookingRequest => {
+            bookingRequests.push({
+              _clientUserID: bookingRequest._clientUserID,
+              _hostUserID: bookingRequest._hostUserID,
+              _listingID: bookingRequest._listingID,
+              _dateStart: bookingRequest._dateStart,
+              _dateEnd: bookingRequest._dateEnd,
+              _needMover: bookingRequest._needMover
+            });
+          });
+          return res.json(bookingRequests.reverse());
+        })
+        .catch(err => {
+          res.status(500).json({ error: "something went wrong"});
+          console.error(err);
+        });
+    }
+  });
+
+module.exports = router;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="FirebaseManager.html">FirebaseManager</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.3</a> on Thu Nov 14 2019 02:02:02 GMT-0800 (Pacific Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

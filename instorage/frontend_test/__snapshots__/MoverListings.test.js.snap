@@ -1,0 +1,11 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`FilterBar should match the snapshot 1`] = `ShallowWrapper {}`;
+
+exports[`MoverListings should match the snapshot 1`] = `ShallowWrapper {}`;
+
+exports[`MovingJob should match the snapshot 1`] = `ShallowWrapper {}`;
+
+exports[`MovingJobModal should match the snapshot 1`] = `ShallowWrapper {}`;
+
+exports[`MovingJobsList should match the snapshot 1`] = `ShallowWrapper {}`;

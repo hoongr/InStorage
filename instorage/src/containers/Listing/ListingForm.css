@@ -1,0 +1,24 @@
+
+.title {
+	text-align: center;
+	padding-top: 40px;
+}
+
+.card-margin {
+	margin: 40px;
+}
+
+.form-padding {
+	padding: 10px;
+}
+
+.btn-custom {
+	background-color: #274060;
+	color: white;
+}
+
+.btn:hover {
+	color: #fff !important;
+	text-decoration: none;
+}
+

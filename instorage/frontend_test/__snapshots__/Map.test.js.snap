@@ -1,0 +1,9 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`LocationSearchInput should match the snapshot 1`] = `ShallowWrapper {}`;
+
+exports[`MapContainer should match the snapshot 1`] = `ShallowWrapper {}`;
+
+exports[`MapTest should match the snapshot 1`] = `ShallowWrapper {}`;
+
+exports[`Marker should match the snapshot 1`] = `ShallowWrapper {}`;
