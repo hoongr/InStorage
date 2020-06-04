@@ -39,9 +39,3 @@ Here are some of the pages I was responsible for.
 
 #### Post Listings Page
 ![Post Listings Page](readme_images/post.png)
-
-#### Book Listings Page
-![Book Listings Page](readme_images/booklisting.png)
-
-#### User Ratings Page
-![User Ratings Page](readme_images/rating.png)
